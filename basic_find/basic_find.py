@@ -60,7 +60,12 @@ def parse_args():
     logger.debug(args)
     return args
 
-
-if __name__ == '__main__':
+def main():
+    """docstring for main"""
     args = parse_args()
     find_files(args)
+
+
+
+if __name__ == '__main__':
+    main()
