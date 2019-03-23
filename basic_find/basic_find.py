@@ -1,52 +1,44 @@
 # -*- coding: utf-8 -*-
-"""
-Basic find program, cut-down version of unix 'find'
+""" Basic find program, cut-down version of unix 'find'
 Walks a file hierarchy
 
 find . -name '*.txt'
 find temp -type f
 find . -type d
-
-todo:
-find . -name '*.rb' -exec rm {} \;
 """
 
-import os
 import argparse
 from pathlib import Path
-from sys import exit
 import logging
 
-from pprint import pprint
-
-logging.basicConfig(format='%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
-                    datefmt='%Y-%m-%d:%H:%M:%S',
+LOGGING_FORMAT = '%(levelname)-8s [%(filename)s:%(lineno)d] %(message)s'
+logging.basicConfig(format=LOGGING_FORMAT, datefmt='%Y-%m-%d:%H:%M:%S',
                     level=logging.INFO)
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
-def find_name(p, name):
+def find_name(path, name):
     """docstring for find_name"""
-    for f in p.rglob(name):
-        print(f)
+    for filename in path.rglob(name):
+        print(filename)
 
 
-def type_find(p, args):
+def type_find(path, args):
     """docstring for type_find"""
-    for f in p.rglob(args.name or '*'):
-        if args.type == 'f' and f.is_file():
-            print(f)
-        elif args.type == 'd' and f.is_dir():
-            print(f)
+    for filename in path.rglob(args.name or '*'):
+        if args.type == 'f' and filename.is_file():
+            print(filename)
+        elif args.type == 'd' and filename.is_dir():
+            print(filename)
 
 
 def find_files(args):
     """docstring for find_files"""
-    p = Path(args.path)
+    the_path = Path(args.path)
     if args.name and not args.type:
-        find_name(p, args.name)
+        find_name(the_path, args.name)
     else:
-        type_find(p, args)
+        type_find(the_path, args)
 
 
 def parse_args():
@@ -55,16 +47,17 @@ def parse_args():
     parser.add_argument('path', type=str, help='Path of search')
     parser.add_argument('-name', type=str, help='Name of file or directory')
     parser.add_argument(
-        '-type', choices=['f', 'd'], type=str, help='Specify the type, f for files, d for directories')
+        '-type', choices=['f', 'd'], type=str,
+        help='Specify the type, f for files, d for directories')
     args = parser.parse_args()
-    logger.debug(args)
+    LOGGER.debug(args)
     return args
+
 
 def main():
     """docstring for main"""
     args = parse_args()
     find_files(args)
-
 
 
 if __name__ == '__main__':
